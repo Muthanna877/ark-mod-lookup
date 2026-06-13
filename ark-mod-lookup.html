@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Ark Mod Lookup · CurseForge ID Resolver</title>
+  <!-- Google Font + simple CSS reset -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+      font-family: 'Inter', sans-serif;
+      color: #1a2c3e;
+      padding: 2rem 1.5rem;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* header & steps card */
+    .hero {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1f5e3a, #2c7a4b);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.01em;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: #2c5368;
+      margin-top: 0.5rem;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* steps tutorial panel */
+    .tutorial-card {
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+      border: 1px solid rgba(46, 125, 80, 0.2);
+      transition: all 0.2s;
+    }
+
+    .tutorial-card h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      color: #1e4a2f;
+    }
+
+    .steps-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      justify-content: space-between;
+      margin-top: 0.8rem;
+    }
+
+    .step {
+      flex: 1;
+      min-width: 180px;
+      background: #f8fafc;
+      padding: 1rem 1.2rem;
+      border-radius: 1.2rem;
+      border-left: 4px solid #2e7d64;
+    }
+
+    .step .step-num {
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: #2c7a4b;
+      opacity: 0.7;
+    }
+
+    .step p {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      color: #1f3b4c;
+    }
+
+    .step a {
+      color: #1f6e43;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dashed #8bc34a;
+    }
+
+    /* main search box */
+    .search-area {
+      background: white;
+      border-radius: 2rem;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2edf2;
+    }
+
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+
+    .input-field {
+      flex: 3;
+      min-width: 220px;
+    }
+
+    .api-field {
+      flex: 2;
+      min-width: 220px;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #2c5a6e;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: 'Inter', monospace;
+      font-size: 0.95rem;
+      border: 1.5px solid #dce7ec;
+      border-radius: 1.2rem;
+      background: #ffffff;
+      transition: 0.2s;
+      outline: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #2c7a4b;
+      box-shadow: 0 0 0 3px rgba(44, 122, 75, 0.2);
+    }
+
+    .button-primary {
+      background: #1f5e3a;
+      border: none;
+      padding: 0.85rem 2rem;
+      font-weight: 600;
+      border-radius: 2rem;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      margin-top: 1.2rem;
+      width: 100%;
+    }
+
+    .button-primary:hover {
+      background: #12452b;
+      transform: translateY(-2px);
+    }
+
+    .button-secondary {
+      background: #eef2f9;
+      border: 1px solid #cbdde6;
+      color: #1f5e3a;
+      margin-left: 0.5rem;
+    }
+
+    .flex-btns {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .status-msg {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      padding: 0.6rem 1rem;
+      border-radius: 1rem;
+      background: #f1f5f9;
+    }
+
+    .results-table-wrapper {
+      background: white;
+      border-radius: 1.8rem;
+      overflow-x: auto;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e9f0f3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 1.2rem 1rem;
+      background: #f4faf7;
+      font-weight: 600;
+      color: #1c4d3a;
+      border-bottom: 1px solid #d4e2e9;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #ecf3f6;
+      color: #1f3b4c;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .mod-name {
+      font-weight: 600;
+      color: #1a4e2d;
+    }
+
+    .mod-id {
+      font-family: monospace;
+      background: #f0f4f9;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      display: inline-block;
+    }
+
+    .error-row {
+      background: #fff5f0;
+    }
+
+    .error-msg {
+      color: #bc5a2c;
+      font-size: 0.8rem;
+    }
+
+    .footer-note {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #5c7f8c;
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 1rem;
+      }
+      .tutorial-card, .search-area {
+        padding: 1rem;
+      }
+      th, td {
+        padding: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <h1>🦖 ARK: Survival Ascended · Mod Resolver</h1>
+    <p>Convert CurseForge project IDs into readable mod names.</p>
+  </div>
+
+  <!-- STEP-BY-STEP TUTORIAL (visible to everyone) -->
+  <div class="tutorial-card">
+    <h2>📘 How to use this tool</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <p><strong>Get a free API key</strong><br>Sign in at <a href="https://console.curseforge.com" target="_blank" rel="noopener">CurseForge Console</a> → Create API key. It's free & takes 1 minute.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <p><strong>Paste your API key</strong><br>Enter the key in the field below (looks like <code>$2a$10$...</code>). It stays in your browser only.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <p><strong>Enter mod IDs</strong><br>Comma-separated list, e.g.<br> <code>419,1473300,980727</code>. Works with any quantity.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <p><strong>Click "Lookup mods"</strong><br>Results appear instantly with mod names, slugs, and links. Your API key is never stored remotely.</p>
+      </div>
+    </div>
+    <!-- REPLACED TEXT: old worldwide sentence removed, new batch lookup sentence added -->
+    <p style="margin-top: 1rem; font-size: 0.85rem; background: #eef3ea; padding: 0.5rem 1rem; border-radius: 2rem;">✨ Batch lookup hundreds of CurseForge projects at once — fast and reliable.</p>
+  </div>
+
+  <!-- SEARCH CONTROLS -->
+  <div class="search-area">
+    <div class="input-group">
+      <div class="api-field">
+        <label>🔑 CURSEFORGE API KEY <span style="font-weight:normal;">(required)</span></label>
+        <input type="text" id="apiKeyInput" placeholder="Paste your API key here" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="input-field">
+        <!-- LABEL CHANGED: now says "comma separate mods from each other" -->
+        <label>🆔 MOD PROJECT IDS (comma separate mods from each other)</label>
+        <textarea id="modIdsInput" rows="2" placeholder="Example: 419, 1473300, 980727, 1133222, 1310904"></textarea>
+      </div>
+    </div>
+    <div class="flex-btns">
+      <button class="button-primary" id="lookupBtn">🔍 Lookup mod names →</button>
+      <button class="button-primary button-secondary" id="clearBtn">🗑️ Clear results</button>
+    </div>
+    <div id="statusMessage" class="status-msg">⚡ Ready. Paste your API key and comma-separated IDs — results will appear below.</div>
+  </div>
+
+  <!-- RESULTS TABLE -->
+  <div class="results-table-wrapper">
+    <table id="resultsTable">
+      <thead>
+        <tr><th style="width: 28%">Project ID</th><th style="width: 55%">Mod Name / Slug</th><th style="width: 17%">Link</th></tr>
+      </thead>
+      <tbody id="resultsBody">
+        <tr><td colspan="3" style="text-align:center; padding:2rem;">✨ Enter IDs & API key, then click search. Example IDs from your reference file are pre-filled below.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- FOOTER NOTE ALSO UPDATED to match the new batch lookup message -->
+  <div class="footer-note">
+    ⚡ Batch lookup hundreds of CurseForge projects at once — fast and reliable. All requests are made directly from your browser. Use a valid API key from <a href="https://console.curseforge.com" target="_blank">console.curseforge.com</a> — key never leaves your device.
+  </div>
+</div>
+
+<script>
+  // --------------------------------------------------------------
+  //  pure frontend mod lookup using CurseForge API (no python, no backend)
+  //  supports any number of IDs, batched requests with concurrency control
+  // --------------------------------------------------------------
+
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const modIdsInput = document.getElementById('modIdsInput');
+  const lookupBtn = document.getElementById('lookupBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const resultsBody = document.getElementById('resultsBody');
+  const statusDiv = document.getElementById('statusMessage');
+
+  // Helper: parse IDs from textarea (supports comma, space, newline — but UI text now says "comma separate")
+  // Internally we still accept spaces/newlines for robustness, but user instruction says commas.
+  function parseIds(raw) {
+    if (!raw.trim()) return [];
+    // split by commas OR whitespace (spaces, newlines)
+    let parts = raw.split(/[,\s]+/);
+    const ids = [];
+    for (let p of parts) {
+      p = p.trim();
+      if (p === "") continue;
+      // check if numeric positive integer
+      if (/^\d+$/.test(p)) {
+        ids.push(parseInt(p, 10));
+      } else {
+        // if not numeric but could be like "123abc" -> ignore, but we keep as string to show error later
+        if (!isNaN(Number(p)) && Number(p) > 0) ids.push(Number(p));
+        else ids.push(p);
+      }
+    }
+    // deduplicate
+    const unique = [];
+    const seen = new Set();
+    for (let id of ids) {
+      const key = id.toString();
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(id);
+      }
+    }
+    return unique;
+  }
+
+  // Helper: fetch single mod info by ID using API key
+  async function fetchModInfo(apiKey, projectId) {
+    const url = `https://api.curseforge.com/v1/mods/${projectId}`;
+    const headers = {
+      'x-api-key': apiKey,
+      'Accept': 'application/json'
+    };
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const response = await fetch(url, { method: 'GET', headers, signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        let errorDetail = `HTTP ${response.status}`;
+        if (response.status === 403) errorDetail = "API key invalid or missing permissions";
+        else if (response.status === 429) errorDetail = "Rate limited, please wait and retry";
+        else if (response.status === 404) errorDetail = "Mod ID not found";
+        return { id: projectId, error: true, message: errorDetail };
+      }
+      const data = await response.json();
+      if (data && data.data) {
+        const mod = data.data;
+        return {
+          id: projectId,
+          name: mod.name,
+          slug: mod.slug,
+          links: mod.links?.websiteUrl || `https://www.curseforge.com/ark-survival-ascended/mods/${mod.slug}`,
+          error: false
+        };
+      } else {
+        return { id: projectId, error: true, message: "Unexpected API response" };
+      }
+    } catch (err) {
+      if (err.name === 'AbortError') return { id: projectId, error: true, message: "Request timeout" };
+      return { id: projectId, error: true, message: `Fetch error: ${err.message}` };
+    }
+  }
+
+  // batch parallel lookup with concurrency limit (to avoid overwhelming API)
+  async function batchLookupMods(apiKey, ids, onProgress) {
+    const results = [];
+    const CONCURRENCY = 8;
+    const queue = [...ids];
+    let active = 0;
+    let index = 0;
+    return new Promise((resolve) => {
+      function worker() {
+        if (index >= queue.length && active === 0) {
+          resolve(results);
+          return;
+        }
+        while (active < CONCURRENCY && index < queue.length) {
+          const id = queue[index];
+          index++;
+          active++;
+          fetchModInfo(apiKey, id)
+            .then(res => {
+              results.push(res);
+              if (onProgress) onProgress(results.length, ids.length);
+            })
+            .catch(e => {
+              results.push({ id: id, error: true, message: e.message });
+              if (onProgress) onProgress(results.length, ids.length);
+            })
+            .finally(() => {
+              active--;
+              worker();
+            });
+        }
+      }
+      worker();
+    });
+  }
+
+  // render table rows
+  function renderResults(resultsList, totalRequestedIds) {
+    resultsBody.innerHTML = '';
+    if (!resultsList || resultsList.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="3" style="text-align:center; padding:2rem;">🔎 No results — try entering some mod IDs and a valid API key.</td>`;
+      resultsBody.appendChild(tr);
+      return;
+    }
+
+    for (const item of resultsList) {
+      const row = document.createElement('tr');
+      if (item.error) {
+        row.classList.add('error-row');
+        const idCell = document.createElement('td');
+        idCell.innerHTML = `<span class="mod-id">${escapeHtml(String(item.id))}</span>`;
+        const errorCell = document.createElement('td');
+        errorCell.colSpan = 2;
+        errorCell.innerHTML = `<span class="error-msg">⚠️ Error: ${escapeHtml(item.message)}</span>`;
+        row.appendChild(idCell);
+        row.appendChild(errorCell);
+        resultsBody.appendChild(row);
+      } else {
+        const idCell = document.createElement('td');
+        idCell.innerHTML = `<span class="mod-id">${item.id}</span>`;
+        const nameCell = document.createElement('td');
+        nameCell.innerHTML = `<div class="mod-name">${escapeHtml(item.name)}</div><div style="font-size:0.75rem; color:#5f7d8c;">slug: ${escapeHtml(item.slug)}</div>`;
+        const linkCell = document.createElement('td');
+        const modUrl = item.links || `https://www.curseforge.com/ark-survival-ascended/mods/${item.slug}`;
+        linkCell.innerHTML = `<a href="${escapeHtml(modUrl)}" target="_blank" rel="noopener noreferrer" style="color:#1f6e43; text-decoration:none; font-weight:500;">🔗 View mod</a>`;
+        row.appendChild(idCell);
+        row.appendChild(nameCell);
+        row.appendChild(linkCell);
+        resultsBody.appendChild(row);
+      }
+    }
+
+    if (totalRequestedIds && resultsList.length < totalRequestedIds) {
+      const noteRow = document.createElement('tr');
+      noteRow.style.backgroundColor = "#fef9e3";
+      noteRow.innerHTML = `<td colspan="3" style="padding:0.7rem; font-size:0.8rem;">ℹ️ Note: Some IDs may have been filtered or failed. Check errors above.</td>`;
+      resultsBody.appendChild(noteRow);
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+      return c;
+    });
+  }
+
+  // main lookup handler
+  async function performLookup() {
+    const apiKey = apiKeyInput.value.trim();
+    if (!apiKey) {
+      statusDiv.innerHTML = '❌ Please enter your CurseForge API key. <a href="https://console.curseforge.com" target="_blank">Get one here (free)</a>';
+      statusDiv.style.background = "#fff0e6";
+      return;
+    }
+    if (apiKey.length < 20) {
+      statusDiv.innerHTML = '⚠️ API key seems too short — make sure you copied the full key from CurseForge Console.';
+      statusDiv.style.background = "#fff0e6";
+      return;
+    }
+    const rawIds = modIdsInput.value;
+    if (!rawIds.trim()) {
+      statusDiv.innerHTML = '📋 Please enter at least one mod Project ID (comma separated). Example: 419, 1473300';
+      statusDiv.style.background = "#fef2e0";
+      return;
+    }
+    const ids = parseIds(rawIds);
+    if (ids.length === 0) {
+      statusDiv.innerHTML = '⚠️ No valid numeric IDs found. Please enter numbers like 419, 1473300, 980727.';
+      statusDiv.style.background = "#ffe6dd";
+      return;
+    }
+
+    // show loading
+    statusDiv.innerHTML = `🔄 Fetching ${ids.length} mods from CurseForge... (batch lookup in progress)`;
+    statusDiv.style.background = "#eef3fc";
+    resultsBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:2rem;">⏳ Loading mod data... batch resolver active.</td></tr>`;
+
+    try {
+      const results = await batchLookupMods(apiKey, ids, (completed, total) => {
+        statusDiv.innerHTML = `🔄 Progress: ${completed}/${total} mods resolved...`;
+      });
+      // restore original order
+      const originalOrderMap = new Map();
+      ids.forEach((id, idx) => { originalOrderMap.set(id.toString(), idx); });
+      results.sort((a, b) => {
+        const aIdx = originalOrderMap.get(a.id.toString()) ?? 9999;
+        const bIdx = originalOrderMap.get(b.id.toString()) ?? 9999;
+        return aIdx - bIdx;
+      });
+      renderResults(results, ids.length);
+      const errorCount = results.filter(r => r.error).length;
+      const successCount = results.length - errorCount;
+      if (errorCount === 0) {
+        statusDiv.innerHTML = `✅ Success! Found ${successCount} mods (${ids.length} total).`;
+        statusDiv.style.background = "#e0f2e9";
+      } else {
+        statusDiv.innerHTML = `⚠️ Completed: ${successCount} resolved, ${errorCount} failed. Check table for errors.`;
+        statusDiv.style.background = "#fff0e0";
+      }
+    } catch (err) {
+      console.error(err);
+      statusDiv.innerHTML = `💥 Unexpected error: ${err.message}. Please verify API key and network.`;
+      statusDiv.style.background = "#ffe0db";
+      resultsBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:2rem;">Request failed — check API key, CORS, or connection.</td></tr>`;
+    }
+  }
+
+  // Clear results and reset status
+  function clearAll() {
+    resultsBody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:2rem;">✨ Cleared. Enter IDs & API key to search again.</td></tr>`;
+    statusDiv.innerHTML = '🧹 Results cleared. Ready for new lookup.';
+    statusDiv.style.background = "#f1f5f9";
+  }
+
+  // prefill example IDs from the reference (the ones shown in original image)
+  function setExampleIds() {
+    const exampleIds = "419,1473300,980727,1133222,1310904,1396068,1346098,935708,1254456,1426403,1070501,1099319,1192977,1048204,947033,945883,93540";
+    modIdsInput.value = exampleIds;
+    statusDiv.innerHTML = '📋 Example IDs loaded! Paste your API key and click "Lookup mods".';
+    statusDiv.style.background = "#eef3fc";
+  }
+
+  // add "Load example IDs" button
+  const exampleBtn = document.createElement('button');
+  exampleBtn.textContent = '📋 Load example IDs (from reference)';
+  exampleBtn.className = 'button-primary button-secondary';
+  exampleBtn.style.marginLeft = '0';
+  exampleBtn.style.marginTop = '0.2rem';
+  exampleBtn.style.padding = '0.5rem 1rem';
+  exampleBtn.style.fontSize = '0.8rem';
+  exampleBtn.onclick = setExampleIds;
+  const flexDiv = document.querySelector('.flex-btns');
+  if (flexDiv) flexDiv.appendChild(exampleBtn);
+
+  // attach event listeners
+  lookupBtn.addEventListener('click', performLookup);
+  clearBtn.addEventListener('click', clearAll);
+
+  window.addEventListener('load', () => {
+    if (!modIdsInput.value.trim()) {
+      modIdsInput.placeholder = "e.g., 419, 1473300, 980727, 928830, 1038262 ...";
+    }
+    statusDiv.innerHTML = '✨ Ready. Paste your API key → add comma-separated IDs → get mod names.';
+  });
+</script>
+</body>
+</html>
